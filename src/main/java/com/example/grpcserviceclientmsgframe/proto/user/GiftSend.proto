@@ -1,0 +1,351 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+
+package hc.proto.user;
+
+
+
+service GiftSendService {
+  // 赠送礼物(批量)
+  rpc sendGiftBatch(SendGiftBatchReq) returns(SendGiftBatchVoResp);
+
+}
+
+
+
+message SendGiftBatchReq {
+
+
+  // 礼物ID
+  // 使用int64表示Long类型
+  int64 giftId = 1;
+
+  // 赠送数量
+  // 使用int32表示Integer类型
+  int32 amount = 2;
+
+  // 主播ID
+  // 使用int64表示Long类型
+  int64 partyId = 3;
+
+  // 赠送用户ID
+  // 使用int64表示Long类型
+  int64 giveId = 4;
+
+  // 接受用户ids
+  // 使用repeated表示List类型
+  repeated int64 collectIds = 5;
+
+  // 礼物来源
+  // 使用int32表示Integer类型
+  int32 sourceType = 6;
+
+  // 业务ID
+  // 使用int64表示Long类型
+  int64 objectId = 7;
+
+  // 是否拉黑检查
+  // 使用bool表示Boolean类型
+  bool checkBlack = 8;
+
+  // 是否检查性别
+  // 使用bool表示Boolean类型
+  bool checkSex = 9;
+
+  // 付费通话方ID
+  // 使用int64表示Long类型
+  int64 payerId = 10;
+
+  // 主播类型
+  // 使用int32表示Integer类型
+  int32 partyType = 11;
+}
+
+message SendGiftBatchVoResp{
+  // 返回-礼物信息
+  GiftVoResp gift = 1;
+
+  // 返回-用户余额
+  UserCoinVoResp userCoin = 2;
+
+  // 返回-赠送数量
+  int32 amount = 3;
+
+  // 返回-返奖倍数
+  int32 rewardAmount = 4;
+
+  // 返回-大奖返奖倍数
+  int32 specMultipleAmount = 5;
+
+  // 返回-大奖返奖钻石数
+  int64 specMultipleCoins = 6;
+
+  // 返回-返奖钻石数
+  int64 rewardCoins = 7;
+
+  // 返回-总赠送金币
+  int64 totalSendCoin = 8;
+
+  // 送礼用户-用户基本信息
+  GiftUserDtoResp giveUser = 9;
+
+  // 收礼用户-用户基本信息+用户赠送+主播收益+特殊倍数
+  repeated CollectGiftUserDtoResp collectsUsers = 10;
+
+  // 背包剩余礼物
+  BackpackGiftRemainVoResp backpackGiftRemainVo = 11;
+
+  // 心愿单
+  UserWishVoResp userWishVo = 12;
+}
+
+
+message GiftVoResp{
+  int32 id = 1;
+
+  string name = 2;
+
+  int32 coin = 3;
+
+  string pic = 4;
+
+  bool floated = 5;
+
+  string floatGiftUrl = 6;
+
+  string floatGiftSvgaUrl = 7;
+
+  string micFloatUrl = 8;
+}
+
+message UserCoinVoResp{
+  /**
+ * 钻石-充值
+ */
+  int64 rechargeCoin = 1;
+
+  /**
+   * 金币-收益
+   */
+  int64 gainCoin = 2;
+
+  /**
+   * 更新时间
+   */
+  int64 updateTime = 3;
+}
+
+message GiftUserDtoResp{
+  // 用户ID
+  int64 user_id = 1;
+
+  // 用户靓号
+  int64 userNumber = 2;
+
+  // 用户昵称
+  string nickname = 3;
+
+  // 用户头像
+  string head_url = 4;
+
+  // 用户性别
+  int32 sex = 5;
+
+  int64 charms = 6;
+
+  int64 richs = 7;
+
+  string birthday = 8;
+
+  // 头像框
+  string avatarFrame = 9;
+
+  // 勋章
+  string medal = 10;
+}
+
+message CollectGiftUserDtoResp{
+
+  // 用户ID
+  int64 userId = 1;
+
+  // 用户靓号
+  int64 userNumber = 2;
+
+  // 用户昵称
+  string nickname = 3;
+
+  // 用户头像
+  string headUrl = 4;
+
+  // 用户性别
+  int32 sex = 5;
+
+  int64 charms = 6;
+
+  int64 richs = 7;
+
+  string birthday = 8;
+
+  // 头像框
+  string avatarFrame = 9;
+
+  // 勋章
+  string medal = 10;
+
+  //用户赠送-钻石
+  int64 sendCoin = 11;
+  //主播收益-金币
+  int64 gainCoin = 12;
+  //特殊倍数标记(0无，1:50倍，2:100倍)
+  int32 specMultiple = 13;
+  //特殊倍数累计
+  int32 specMultipleAmount = 14;
+
+
+}
+
+message BackpackGiftRemainVoResp{
+
+  //礼物ID
+  int64 giftId=1;
+  //礼物数量
+  int32 count=2;
+  int64 updateTime=3;
+}
+
+message UserPropInfoResp{
+  // 坐骑
+  string car = 1;
+
+  // 坐骑进场飘屏动效
+  string carFloat = 2;
+
+  // 头像框
+  string avatarFrame = 3;
+
+  // 勋章
+  string medal = 4;
+}
+
+message UserBasicResp{
+  // 用户ID
+  int64 userId = 1;
+
+  // 用户靓号
+  int64 userNumber = 2;
+
+  // 用户昵称
+  string nickname = 3;
+
+  // 用户头像
+  string headUrl = 4;
+
+  // 用户性别
+  int32 sex = 5;
+
+  // 是否实名认证(0、否 1、是)
+  int32 audit = 6;
+
+  // 用户状态(0禁用,1启用)
+  int32 status = 7;
+
+  // 用户状态
+  int32 state = 8;
+
+  // 通话
+  int32 inCall = 9;
+
+  // 注册时间
+  string registerTime = 10;
+
+  // 生日
+  string birthday = 11;
+
+  // 国籍
+  string country = 12;
+
+  // 最后在线时间
+  string lastOperateTime = 13;
+
+  // 在线状态
+  int32 online = 14;
+
+  // 魅力值
+  int64 charms = 15;
+
+  // 财富值
+  int64 richs = 16;
+
+  // 所在经度
+  double longitude = 17;
+
+  // 所在纬度
+  double latitude = 18;
+
+  // 通话显示URL
+  string callShowUrl = 19;
+
+  // 语言习惯
+  string languageHabits = 20;
+
+  // 1v1视频价格level
+  int32 callVideoPrice = 21;
+
+  UserPropInfoResp userPropInfo=22;
+}
+
+message UserWishTop3VoResp{
+  /**
+    * 用户信息
+    */
+  UserBasicResp userBasic=1;
+
+  /**
+   * 等级
+   */
+  int32 wishLevel=2;
+}
+
+message UserWishVoResp{
+  // 礼物ID
+  int32 giftId = 1;
+
+  // 礼物图标
+  string giftUrl = 2;
+
+  // 当前等级
+  int32 curLevel = 3;
+
+  // 提升等级
+  int32 upLevel = 4;
+
+  // 当前阶段位置
+  int32 curIndex = 5;
+
+  // 当前阶段 - 开始位置
+  int32 startIndex = 6;
+
+  // 当前阶段 - 结束位置
+  int32 endIndex = 7;
+
+  // 是否提醒女主播
+  bool remind = 8;
+
+  // 主力用户前三名
+  repeated UserWishTop3VoResp top3UserList = 9;
+
+  // 已经助力人数
+  int32 totalUser = 10;
+
+  // 更新时间
+  int64 updateTime = 11;
+
+  // 上一个等级开始Index
+  int32 lastStartIndex = 12;
+
+  // 上一个等级结束Index
+  int32 lastEndIndex = 13;
+}
+

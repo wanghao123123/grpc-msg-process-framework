@@ -1,0 +1,241 @@
+syntax = "proto3";
+option java_multiple_files = true;
+package hc.proto.user;
+
+message UserInfoDTO {
+    // 用户ID
+    int64 userId = 1;
+
+    // 用户编号
+    int64 userNumber = 2;
+
+    // 用户类型 (0: 游客, 1: 注册用户)
+    int32 userType = 3;
+
+    // 登录方式 (0: phoneNumber, 1: Twitter, 2: Facebook, 3: Google)
+    int32 loginType = 4;
+
+    // 登录来源
+    int32 loginForm = 5;
+
+    // 第三方登录openId
+    string apiId = 6;
+
+    // 第三方登录token
+    string apiToken = 7;
+
+    // 第三方登录apiSecret
+    string apiSecret = 8;
+
+    // 昵称
+    string nickname = 9;
+
+    // 区号
+    string areaCode = 10;
+
+    // 手机号码
+    string phoneNumber = 11;
+
+    // 盐
+    string salt = 12;
+
+    // 密码
+    string password = 13;
+
+    // 生日
+    int64 birthday = 14;
+
+    // 性别
+    int32 sex = 15;
+
+    // 用户头像
+    string headUrl = 16;
+
+    // 国籍
+    string country = 17;
+
+    // 省份
+    string province = 18;
+
+    // 城市
+    string city = 19;
+
+    // 签名
+    string sign = 20;
+
+    // 用户状态 (1: 启用, 0: 禁用, 2: 注销, 3: 未激活)
+    int32 status = 21;
+
+    // 是否官方认证 (0: 否, 1: 是)
+    int32 audit = 22;
+
+    // 认证状态 (0: 未认证, 1: 认证中, 2: 认证未通过, 3: 认证通过)
+    int32 auditStatus = 23;
+
+    // 是否在线
+    int32 online = 24;
+
+    // 系统版本
+    string osVersion = 25;
+
+    // app版本号
+    string appVersion = 26;
+
+    // 应用类型 (0: 主包)
+    int32 appType = 27;
+
+    // app名字
+    string appName = 28;
+
+    // 编译版本
+    int32 buildVersion = 29;
+
+    // 平台类型 (0: Android, 1: iOS)
+    int32 platformType = 30;
+
+    // 平台型号 (如iPhone6)
+    string platformModel = 31;
+
+    // 最后登录ip
+    string ip = 32;
+
+    // 最后登录经度
+    double longitude = 33;
+
+    // 最后登录纬度
+    double latitude = 34;
+
+    // 最后登录的设备序列号
+    string phoneImie = 35;
+
+    // 最新下载渠道
+    string downloadChannel = 36;
+
+    // 最新推广渠道
+    string promotionChannel = 37;
+
+    // 最后在线时间
+    int64 lastOperateTime = 38;
+
+    // 上次登出时间
+    int64 logoutTime = 39;
+
+    // 创建时间
+    int64 createTime = 40;
+
+    // 更新时间
+    int64 updateTime = 41;
+
+    // 是否充值用户
+    bool recharged = 42;
+
+    // 钻石
+    int64 rechargeCoin = 43;
+
+    // 增送钻石
+    int64 sendRechargeCoin = 44;
+
+    // 金币
+    int64 gainCoin = 45;
+
+    // 增送金币
+    int64 sendGainCoin = 46;
+
+    // 直播间主播一个循环总钻石数（30天）
+    int64 liveLoopGold = 47;
+
+    // 30天收到的金币
+    int64 charms = 48;
+
+    // 30使用的钻石
+    int64 richs = 49;
+
+    // 关注人数
+    int32 followers = 50;
+
+    // 粉丝人数
+    int32 fans = 51;
+
+    // 访客人数
+    int32 access = 52;
+
+    // 封禁类型 (0: 封号, 1: 封设备, 2: 封号封设备)
+    int32 banType = 53;
+
+    // 封禁时间类型 (0: 24小时, 1: 3天, 2: 7天, 3: 永久)
+    int32 banTimeType = 54;
+
+    // 封禁原因类型 (0: 色情, 1: 毒品, 2: 恐怖, 3: 违法, 4: 违法平台规定)
+    int32 banReasonType = 55;
+
+    // 工会id
+    int64 unionId = 56;
+
+    // 是否工会长
+    int32 unionLeader = 57;
+
+    // 是否主播
+    int32 isLive = 58;
+
+    // 用户token
+    string token = 59;
+
+    // sns 端点endpointArn
+    string endpointArn = 60;
+
+    // 语言习惯
+    string languageHabits = 61;
+
+    // 语音聊天开启
+    bool callVoice = 62;
+
+    // 语音聊天价格level
+    int32 callVoicePrice = 63;
+
+    // 视频聊天开启
+    bool callVideo = 64;
+
+    // 1v1视频价格level
+    int32 callVideoPrice = 65;
+
+    // 是否直播中
+    int32 inCall = 66;
+
+    // 是否禁播
+    bool liveBan = 67;
+
+    // 接单展示封面
+    string callShowUrl = 68;
+
+    // 是否审核期用户
+    int32 auditUser = 69;
+
+    // 是否推荐 (0: 否, 1: 是)
+    int32 recommend = 70;
+
+    // 用户状态
+    int32 state = 71;
+
+    // 允许的充值方式 (1: Google Pay, 2: Payermax, 10: All)
+    int32 allowRechargeType = 72;
+
+    // 封禁状态
+    int32 banStatus = 73;
+
+    // 统计使用
+    bool isFirstRegister = 74;
+
+    // 是否打开上传日志入口
+    int32 uploadLogStatus = 75;
+
+    // 美颜评分
+    int32 beautyRating = 76;
+
+    // 第二语言
+    string secondLanguage = 77;
+
+    // 人脸检测
+    int32 detectFaces = 78;
+}
+
+

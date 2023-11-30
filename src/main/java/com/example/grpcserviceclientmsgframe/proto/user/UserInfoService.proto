@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+
+package hc.proto.user;
+
+import "user/UserInfoDTO.proto";
+
+
+service UserInfoService {
+    // 获取用户信息
+    rpc getUser(UserIdReq) returns (UserInfoDTO);
+
+    // 获取多用户信息
+    rpc getUsers(UserIdReq) returns (UserInfoDTO);
+
+    // 获取女用户评级
+    rpc getFemaleRating(UserIdReq) returns (UserFemaleRatingResponse);
+
+    // 批量获取女用户评级
+    rpc getBatchFemaleRating(UserIdReq) returns (UserFemaleRatingListResponse);
+
+}
+
+message UserIdReq {
+
+    int64 user_id = 1;
+
+    repeated int64 user_ids = 2;
+}
+
+message UserFemaleRatingResponse {
+    // 用户ID
+    int64 userId = 1;
+
+    // 用户评级
+    int32 feMaleRating = 2;
+}
+
+message UserFemaleRatingListResponse {
+    repeated UserFemaleRatingResponse userFemaleRating = 1;
+}

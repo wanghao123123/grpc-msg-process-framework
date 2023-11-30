@@ -1,0 +1,176 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+
+package hc.proto.user;
+
+
+
+service UserCoinService {
+  // 用户资产操作
+  rpc updateCoin(CoinInfoReq) returns(UserCoinParamsResp);
+  //账户钻石|赠送钻石 token - 扣费
+  rpc deductCoin(DeductCoinReq) returns(UserCoinResultResp);
+  rpc addCoin(AddCoinReq) returns(UserCoinResultResp);
+}
+
+message AddCoinReq{
+
+  int64 userId=1;
+  int64 rechargeCoin=2;
+  int64 sendRechargeCoin=3;
+  int64 gainCoin=4;
+  int64 sendGainCoin=5;
+  int64 friendId=6;
+
+  //操作类型
+  int32 operateType = 7;
+  //来源
+  int32 sourceType = 8;
+  //说明
+  string remark = 9;
+  //关联ID
+  int64 objectId = 10;
+}
+
+message UserCoinResultResp{
+  /**
+    * 用户ID
+    */
+  int64 userId=1;
+
+  /**
+   * 钻石
+   */
+  RechargeCoinDto rechargeCoin=2;
+
+  /**
+   * 金币
+   */
+  GainCoinDto gainCoin=3;
+}
+
+message DeductCoinReq{
+
+  int64 userId = 1;
+  int64 rechargeCoin = 2;
+  int64 sendRechargeCoin = 3;
+  int64 friendId = 4;
+  //操作类型
+  int32 operateType = 5;
+  //来源
+  int32 sourceType = 6;
+  //说明
+  string remark = 7;
+  //关联ID
+  int64 objectId = 8;
+
+}
+
+message GainCoinDto{
+  /**
+   * 金币-明细ID
+   */
+  int64 gainCoinDetailId=1;
+  /**
+   * 金币-余额
+   */
+  int64 gainCoinRemain=2;
+  /**
+   * 赠送金币 - 余额
+   */
+  int64 sendGainCoinRemain=3;
+
+  /**
+   * 金币-变动金额
+   * +：加钱
+   * -: 消费
+   */
+  int64 gainCoinUsed=4;
+  /**
+   * 赠送金币 - 变动金额
+   * +：加钱
+   * -: 消费
+   */
+  int64 sendGainCoinUsed=5;
+}
+
+message RechargeCoinDto{
+  /**
+    * 钻石-订单明细
+    */
+  int64 rechargeCoinDetailId=1;
+  /**
+ * 钻石-余额
+ */
+  int64 rechargeCoinRemain=2;
+  /**
+ * 赠送钻石-余额
+ */
+  int64 sendRechargeCoinRemain=3;
+  /**
+ * 钻石-变动金额 (以后可能出现混合支付的情况)
+ * +：加钱
+ * -: 消费
+ */
+  int64 rechargeCoinUsed=4;
+  /**
+ * 赠送钻石-变动金额
+ * +：加钱
+ * -: 消费
+ */
+  int64 sendRechargeCoinUsed=5;
+}
+
+message CoinInfoReq{
+
+
+  /**
+   * 流水id
+   */
+  int64 detailId = 1;
+  int64 userId = 2;
+  int64 friendId = 3;
+  string objectId = 4;
+  int64 coin = 5;
+  int64 sendCoin = 6;
+  int64 coins = 7;
+  /**
+  * 钻石来源类型
+  */
+  int32 fromType = 8;
+  /**
+ * 金币来源类型
+ */
+  int32 receiveType = 9;
+
+  /**
+   * 交易类型
+   */
+  int32 operateType = 10;
+  /**
+   * 交易模块
+   */
+  int32 sourceType = 11;
+  /**
+ * 货币类型  扣除钻石  加金币  此字段传钻石
+
+ */
+  int32 coinType = 12;
+
+
+}
+
+message UserCoin{
+  int64 coin = 1;
+  int64 sendCoin = 2;
+  int64 coins = 3;
+  int64 sendCoins = 4;
+  int64 coinType = 5;
+}
+
+message UserCoinParamsResp{
+  UserCoin gainCoin = 1;
+  UserCoin rechargeCoin = 2;
+}
+

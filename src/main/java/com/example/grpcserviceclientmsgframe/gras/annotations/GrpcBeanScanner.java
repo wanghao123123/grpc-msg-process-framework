@@ -1,5 +1,6 @@
-package com.example.grpcserviceclientmsgframe.grpc.v2;
+package hc.gras.annotations;
 
+import hc.gras.GrpcClientBeanDefinitionRegistrar;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.ElementType;

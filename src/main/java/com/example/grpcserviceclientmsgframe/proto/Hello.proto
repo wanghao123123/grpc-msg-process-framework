@@ -1,0 +1,16 @@
+syntax = "proto3";
+option java_multiple_files = true;
+package hc.dto;
+
+service Hello {
+  rpc hello(Req) returns (Resp);
+}
+
+message Req{
+  string user_id=1;
+}
+
+message Resp{
+  int64 code=1;
+}
+

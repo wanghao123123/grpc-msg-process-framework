@@ -1,19 +1,20 @@
-package com.example.grpcserviceclientmsgframe.grpc.v2;
+package hc.gras;
 
 
-import com.example.grpcserviceclientmsgframe.grpc.GrpcServiceClient;
-import com.example.grpcserviceclientmsgframe.grpc.GrpcServiceRegister;
+import hc.gras.annotations.GrpcBeanScanner;
+import hc.gras.annotations.GrpcServiceClient;
+import hc.gras.interceptors.TimingParamsInterceptor;
 import io.grpc.Channel;
 import io.grpc.ManagedChannelBuilder;
 import lombok.Builder;
 import lombok.Data;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -22,21 +23,20 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.ClassMetadata;
 import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
 import org.springframework.core.type.classreading.MetadataReader;
-import org.springframework.lang.NonNull;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Stream;
 
-public class GrpcClientBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar, ResourceLoaderAware {
+public class GrpcClientBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar, ResourceLoaderAware, EnvironmentAware {
     private ResourcePatternResolver resourcePatternResolver;
     private CachingMetadataReaderFactory metadataReaderFactory;
     private static final String DEFAULT_RESOURCE_PATTERN = "**/*.class";
     private String[] scanBasePackages;
+    private static Environment environment;
 
 
     @Override
@@ -52,7 +52,7 @@ public class GrpcClientBeanDefinitionRegistrar implements ImportBeanDefinitionRe
         Set<BeanDomain> beanClazzSet = setScannerPackages();
         for (BeanDomain beanDomain : beanClazzSet) {
             Class<?> beanClazz = beanDomain.getClazz();
-            String beanName = StringUtils.isBlank(beanDomain.getBeanName()) ? StringUtils.uncapitalize(beanClazz.getSimpleName()) : beanDomain.getBeanName();
+            String beanName = StringUtils.isEmpty(beanDomain.getBeanName()) ? StringUtils.uncapitalize(beanClazz.getSimpleName()) : beanDomain.getBeanName();
             if (registry.isBeanNameInUse(beanName)) {
                 //todo:同名问题处理
                 continue;
@@ -79,7 +79,8 @@ public class GrpcClientBeanDefinitionRegistrar implements ImportBeanDefinitionRe
                 String folderPath = ClassUtils.convertClassNameToResourcePath(scanPackage);
                 String packageSearchPath = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX + folderPath + "/" + DEFAULT_RESOURCE_PATTERN;
                 Resource[] resources1 = this.resourcePatternResolver.getResources(packageSearchPath);
-                resources = ArrayUtils.addAll(resources1, resources);
+                resources = Stream.concat(Arrays.stream(resources), Arrays.stream(resources1))
+                        .toArray(Resource[]::new);
             }
             for (Resource resource : resources) {
                 if (!resource.isReadable()) {
@@ -96,24 +97,26 @@ public class GrpcClientBeanDefinitionRegistrar implements ImportBeanDefinitionRe
                 if (!annotationMetadata.hasAnnotation(GrpcServiceClient.class.getName())) {
                     continue;
                 }
-                Map<String, Object> attributes = annotationMetadata.getAnnotationAttributes(GrpcServiceClient.class.getName());
-                assert attributes != null;
                 Class<?> clazz = Class.forName(className);
-                GrpcServiceClient grpcServiceClient = Class.forName(className).getAnnotation(GrpcServiceClient.class);
-                BeanDomain beanDomain = BeanDomain.builder().clazz(clazz).beanName(Class.forName(className).getSimpleName()).build();
+                GrpcServiceClient grpcServiceClient = clazz.getAnnotation(GrpcServiceClient.class);
+                String grpcClassName = grpcServiceClient.serviceGrpc().getName();
+                BeanDomain beanDomain = BeanDomain.builder().clazz(clazz).beanName(clazz.getSimpleName()).build();
                 set.add(beanDomain);
-                //获取注解服务端地址配置 todo：获取地址方式有待调整
-                String address = AppConfigUtils.get(grpcServiceClient.address());
-                Channel channel = ManagedChannelBuilder.forTarget(address).usePlaintext().build();
-                Channel mapChannel = GrpcServiceRegister.getChannel(grpcServiceClient.projectName().getName());
+                //获取注解服务端地址配置
+                String address = resolve(grpcServiceClient.address());;
+                Channel mapChannel = GrpcServiceRegister.getChannel(grpcClassName);
                 if (Objects.isNull(mapChannel)) {
-                    GrpcServiceRegister.addChannel(grpcServiceClient.projectName().getName(), channel);
+                    //todo:可能存在错误地址覆盖问题，合理处理多数据源问题
+                    Channel channel = ManagedChannelBuilder.forTarget(address)
+                            .intercept(new TimingParamsInterceptor())
+                            .usePlaintext().build();
+                    GrpcServiceRegister.addChannel(grpcClassName, channel);
                 }
                 GrpcServiceRegister.addGrpcClass(className, grpcServiceClient);
+
             }
         } catch (IOException | ClassNotFoundException e) {
-            //todo:错误处理
-            e.printStackTrace();
+            throw new RuntimeException(e);
 
         }
         return set;
@@ -121,9 +124,14 @@ public class GrpcClientBeanDefinitionRegistrar implements ImportBeanDefinitionRe
 
 
     @Override
-    public void setResourceLoader(@NonNull ResourceLoader resourceLoader) {
+    public void setResourceLoader(ResourceLoader resourceLoader) {
         this.resourcePatternResolver = ResourcePatternUtils.getResourcePatternResolver(resourceLoader);
         this.metadataReaderFactory = new CachingMetadataReaderFactory(resourceLoader);
+    }
+
+    @Override
+    public void setEnvironment(Environment environment) {
+        GrpcClientBeanDefinitionRegistrar.environment=environment;
     }
 
     @Data
@@ -133,5 +141,16 @@ public class GrpcClientBeanDefinitionRegistrar implements ImportBeanDefinitionRe
         private Class<?> clazz;
     }
 
+    private String resolve(String value) {
+        if (StringUtils.hasText(value)) {
+            return this.environment.resolvePlaceholders(value);
+        }
+        return value;
+    }
+
+    private String getUrl(GrpcServiceClient grpcServiceClient) {
+        String url = grpcServiceClient.address();
+        return resolve(url);
+    }
 }
 

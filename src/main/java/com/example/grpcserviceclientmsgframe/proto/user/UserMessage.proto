@@ -1,0 +1,207 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+
+package hc.proto.user;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+service UserMessageService {
+    // 检验token
+    rpc checkToken(ImLoginReq) returns (ImLoginRes);
+
+    // 登录成功
+    rpc loginSuccess(ImLoginSuccessReq) returns (SfsMessageUser);
+
+    // 退出登录
+    rpc logout(ImLoginReq) returns (google.protobuf.Empty);
+
+    // 获取用户信息
+    rpc getUserInfo(ImLoginSuccessReq) returns (UserDTO);
+
+    // 用户在线数据统计
+    rpc onlineStatistical(UserOnlineReq) returns (google.protobuf.Empty);
+
+    // 校验用户在线状态
+    rpc checkOnline(UserOnlineReq) returns (google.protobuf.Empty);
+
+    // 下线全部用户 - sfs-chat重启时调用
+    rpc offlineAllUser(google.protobuf.Empty) returns (google.protobuf.Empty);
+}
+
+message ImLoginReq {
+    // 操作人
+    int64  uid = 1;
+    // 传递的token
+    string token = 2;
+    // session
+    string session_hash_id = 3;
+    //  0：消息服务器 1：直播服务器
+    int32 server_type = 4;
+
+    // 时间
+    int64 timestamp = 5;
+}
+
+message ImLoginRes {
+    bool system_user = 1;
+}
+
+message ImLoginSuccessReq {
+    // 操作人
+    int64 user_id = 1;
+
+    // 时间
+    int64 timestamp = 2;
+
+}
+
+// 用户信息
+message SfsMessageUser {
+
+    int64 user_id = 1;
+
+    int32 audit = 2;
+
+    string token = 3;
+
+    int32 app_type = 4;
+
+    int32 platform_type = 5;
+
+    int32 build_version = 6;
+
+    int32 sex = 7;
+
+    int64 union_id = 8;
+
+    int32 union_leader = 9;
+
+    int32 to_comp = 10;
+}
+
+message UserDTO {
+    // 用户ID
+    int64 user_id = 1;
+
+    // 映射user_id
+    int64 user_number = 2;
+
+    // 用户类型 0注册用户
+    int32 user_type = 3;
+
+    // 登录方式(0 phoneNumber 1 Twitter 2 facebook 3google)
+    int32 login_type = 4;
+
+    // 昵称
+    string nickname = 5;
+
+    // 区号
+    string area_code = 6;
+
+    // 手机号码
+    string phone_number = 7;
+
+    // 性别
+    int32 sex = 8;
+
+    // 用户头像
+    string head_url = 9;
+
+    // 国籍
+    string country = 10;
+
+    // 省份
+    string province = 11;
+
+    // 城市
+    string city = 12;
+
+    // 签名
+    string sign = 13;
+
+    // 用户状态(1启用, 0禁用, 2注销, 3未激活)
+    int32 status = 14;
+
+    // 是否官方认证 0否 1是
+    int32 audit = 15;
+
+    // 认证状态 0未认证 1认证中 2认证未通过 3认证通过
+    int32 audit_status = 16;
+
+    // 是否在线
+    int32 online = 17;
+
+    // 最后登录经度
+    double longitude = 18;
+
+    // 最后登录纬度
+    double latitude = 19;
+
+    // 最后在线时间
+    google.protobuf.Timestamp last_operate_time = 20;
+
+    // 上次登出时间
+    google.protobuf.Timestamp logout_time = 21;
+
+    // 创建时间
+    google.protobuf.Timestamp create_time = 22;
+
+    // 是否充值用户
+    bool recharged = 23;
+
+    // 魅力值
+    int64 charms = 24;
+
+    // 财富值
+    int64 richs = 25;
+
+    // 关注人数
+    int32 followers = 26;
+
+    // 粉丝人数
+    int32 fans = 27;
+
+    // 工会ID
+    int64 union_id = 28;
+
+    // 是否工会长
+    int32 union_leader = 29;
+
+    // 是否主播
+    int32 is_live = 30;
+
+    // 用户token
+    string token = 31;
+
+    // 语言习惯
+    string language_habits = 32;
+
+    // 语音聊天开启
+    bool call_voice = 33;
+
+    // 语音聊天价格level
+    int32 call_voice_price = 34;
+
+    // 视频聊天开启
+    bool call_video = 35;
+
+    // 1v1视频价格level
+    int32 call_video_price = 36;
+
+    // 通话中
+    int32 in_call = 37;
+
+    // 应用类型：(0主包)
+    int32 app_type = 38;
+
+    // 平台类型(0 android 1 ios)
+    int32 platform_type = 39;
+}
+
+message UserOnlineReq {
+    repeated int64 user_ids = 1;
+    int32 sfs_type = 2;
+}
+

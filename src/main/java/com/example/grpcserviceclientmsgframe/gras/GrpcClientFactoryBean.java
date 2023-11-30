@@ -1,6 +1,5 @@
-package com.example.grpcserviceclientmsgframe.grpc.v2;
+package hc.gras;
 
-import com.example.grpcserviceclientmsgframe.grpc.GrpcServiceCglibFactory;
 import org.springframework.beans.factory.FactoryBean;
 
 public class GrpcClientFactoryBean<T> implements FactoryBean<T> {
